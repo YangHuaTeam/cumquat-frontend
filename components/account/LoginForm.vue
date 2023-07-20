@@ -168,8 +168,33 @@ export default {
         }
       }
     },
-    initializeUserSession () {
-      // To Be Done
+    initializeUserSession (userInfoReturn) {
+      const userInfoCookie = {}
+      userInfoCookie.uid = userInfoReturn.data.data.uid
+      userInfoCookie.username = userInfoReturn.data.data.username
+      userInfoCookie.email = userInfoReturn.data.data.email
+      userInfoCookie.status = userInfoReturn.data.data.status
+      userInfoCookie.avatarSrc = userInfoReturn.data.data.avatarSrc
+      const userInfoCookieStr = JSON.stringify(userInfoCookie) // Stringify The Cookie Obj in order to storage normally
+      this.editCookieValue('userInfo', userInfoCookieStr, 259200)
+      const cryptoInstance = require('crypto')
+      const md5 = cryptoInstance.createHash('md5')
+      const generateFrontendTempSession = () => {
+        const curDate = new Date()
+        const timeStamp = curDate.getTime()
+        const saltedSessionID = userInfoCookie.email + timeStamp
+        const saltedSessionIDMD5 = md5.update(saltedSessionID).digest('hex')
+        return saltedSessionIDMD5
+      }
+      const frontendTempSession = generateFrontendTempSession()
+      this.editCookieValue('frontendTempSession', frontendTempSession, 259200)
+    },
+    actSubmitSucceed () {
+      this.$data.isSubmitted = true
+      setTimeout(() => {
+        this.$data.transitionPlayed = true
+      }, 500)
+      this.$emit('submitSucceed')
     },
     clearBtnStyle () {
       this.$refs.submitBtn.$el.style = ''

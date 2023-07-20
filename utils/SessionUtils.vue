@@ -25,7 +25,7 @@ export default {
     },
     checkIfSessionIdExist (showSnackBar) {
       const cookie = document.cookie.split(';')
-      const sessionId = this.getCookieValue(cookie, 'sessionId')
+      const sessionId = this.getCookieValue(cookie, 'frontendTempSession')
       const excludeList = ['/account/login', '/account/login/', '/account/register', '/account/register/', '/account/forgot', '/account/forgot/']
       if (sessionId === null) {
         if (!excludeList.includes(this.$route.path)) {
