@@ -19,8 +19,11 @@
 <script>
 export default {
   data: () => ({
-    siteName: 'Cumquat'
+    siteName: ''
   }),
+  mounted () {
+    this.$data.siteName = this.$global.$SITE_NAME
+  },
   methods: {
     replaceToHome () {
       this.$router.push('/table')

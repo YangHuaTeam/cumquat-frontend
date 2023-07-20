@@ -26,6 +26,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/config.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -79,7 +80,7 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   },
-  
+
   // Loading Strip Layout
   loading: {
     color: 'rgba(33, 150, 243)'

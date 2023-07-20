@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <img src="/cumquat-logo.png">
-    <h1>登录到 Comquat Console</h1>
+    <img :src="$global.$SITE_LOGO_URI">
+    <h1>登录到 {{ $global.$SITE_NAME }}</h1>
     <p ref="welcomeTxt">
       请登录以继续操作
     </p>

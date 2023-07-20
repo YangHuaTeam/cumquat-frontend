@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <img src="/cumquat-logo.png">
+    <img :src="$global.$SITE_LOGO_URI">
     <h1>忘记密码</h1>
     <p>丢失了密码? 输入信息以重置</p>
     <AccountForgotForm @submitSucceed="submitSucceed" @submit.native.prevent />
