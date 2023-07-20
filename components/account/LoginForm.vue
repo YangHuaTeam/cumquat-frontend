@@ -122,42 +122,54 @@ export default {
       const dataObj = {}
       dataObj.username = usernameData
       dataObj.password = saltPasswordSHA512
-      this.sendPostToApi('/account/login', dataObj, this.reqDataCallback, false)
+      this.sendPostToApi('/user/login', dataObj, this.reqDataCallback, false)
     },
     reqDataCallback (requestDataReturn) {
-      if (requestDataReturn.code === 1000) {
-        const sessionIdReturn = requestDataReturn.data.sessionId
-        if (sessionIdReturn !== null) {
-          this.editCookieValue('sessionId', sessionIdReturn)
+      if (requestDataReturn.isError === false) { // If log-in is working
+        if (requestDataReturn.data.code === 1000) { // 为了更好的观感以及便于修改, 此处没有使用 &&
+          this.sendGetToApi('/user/overview', '', this.initializeUserSession, false)
         }
-        this.$data.isSubmitted = true
-        setTimeout(() => {
-          this.$data.transitionPlayed = true
-        }, 500)
-        this.$emit('submitSucceed')
-      } else if (requestDataReturn.data !== undefined && requestDataReturn.data.code !== undefined) {
-        if (requestDataReturn.data.code === 3010 && requestDataReturn.code === 404) {
-          this.showResult(undefined, undefined, true, false, '用户名不存在')
-        } else if (requestDataReturn.data.code === 3011 && requestDataReturn.code === 403) {
-          this.showResult(undefined, undefined, false, true, '密码错误')
-        } else if ((requestDataReturn.data.code === 1003 && requestDataReturn.code === 422) || requestDataReturn.code === 422) {
-          this.showResult('error', '参数错误, 请联系系统管理员', true, true, '参数错误')
-        } else if ((requestDataReturn.data.code === undefined && requestDataReturn.code === 500) || requestDataReturn.code === 500) {
+      } else if (requestDataReturn.isError === true) { // If log-in isn't working
+        if (requestDataReturn.code === 401) { // Code is 1001
+          this.showResult('error', '服务异常, 可能是源代码逻辑错误, 或者后端出现问题', true, true, '服务异常, 请检查后端服务器')
+        } else if (requestDataReturn.code === 403) { // Code is either 1001.1 or 1001.2
+          if (requestDataReturn.data.code === 1001.1) { // Either user's pwd or usrname is wrong
+            if (requestDataReturn.data.data.wrong === 'username') {
+              this.showResult(undefined, undefined, true, false, '用户名不存在')
+            } else if (requestDataReturn.data.data.wrong === 'password') {
+              this.showResult(undefined, undefined, false, true, '密码错误')
+            }
+          } else if (requestDataReturn.data.code === 1001.2) { // Not suitable for concurrent situation
+            this.showResult('error', 'API结构异常, 请检查后端', true, true, '结构异常, 请检查后端状态')
+          }
+        } else if (requestDataReturn.code === 500) { // Code is 1002
           this.showResult('error', '服务器内部错误, 请重试', true, true, '服务器内部错误, 请重试')
-        } else if (requestDataReturn.data.code !== undefined) {
-          this.showResult('error', requestDataReturn.data.message, true, true, '未识别的错误')
+        } else if (requestDataReturn.code === 404) { // Code is 1003, or server is not running correctly
+          if (requestDataReturn.data.code === 1003) {
+            this.showResult('error', 'API结构异常, 请检查后端', true, true, '结构异常, 请检查后端状态')
+          } else {
+            this.showResult('error', 'API未正常运行, 请检查后端状态', true, true, 'API未正常运行, 请检查后端服务器')
+          }
+        } else if (requestDataReturn.code === 422) { // Code is either 1003 or 1003.1
+          if (requestDataReturn.data.code === 1003) {
+            this.showResult('error', '参数错误, 请检查后端, 是否与前端版本不匹配或发生其他问题?', true, true, '参数错误, 请检查后端状态')
+          } else if (requestDataReturn.data.code === 1003.1) {
+            this.showResult('error', '参数校验异常, 请检查输入内容合法性', true, true, '参数校验异常, 请检查输入内容合法性')
+          }
+        } else if (requestDataReturn.code === 423) { // Code is 1004
+          this.showResult('warning', '请求过于频繁, 您的IP已被记录, 请稍后再试', true, true, '请求过于频繁, 请稍后再试')
+          setTimeout(() => {
+            this.showResult('warning', '由于恶意请求, 您的IP已被记录, 继续尝试可能导致被封禁, 请慎重', true, true, '请求过于频繁, 请稍后再试')
+          }, 5000)
+        } else if (requestDataReturn.code === -1) {
+          this.showResult('error', '网络错误, 请重试', true, true, '网络错误, 请重试')
         } else {
           this.showResult('error', '发生未知错误, 请重试', true, true, '发生未知错误, 请重试')
         }
-      } else if (requestDataReturn.code === 500) {
-        this.showResult('error', '服务器内部错误, 请重试', true, true, '服务器内部错误, 请重试')
-      } else if (requestDataReturn.code === -1) {
-        this.showResult('error', '网络错误, 请重试', true, true, '网络错误, 请重试')
-      } else if (requestDataReturn.code === 0) {
-        this.showResult('error', '发生未知错误, 请重试', true, true, '发生未知错误, 请重试')
-      } else {
-        this.showResult('error', '发生未知错误, 请重试', true, true, '发生未知错误, 请重试')
       }
+    },
+    initializeUserSession () {
+      // To Be Done
     },
     clearBtnStyle () {
       this.$refs.submitBtn.$el.style = ''

@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <img src="/cumquat-logo.png">
-    <h1>注册玲行云端账户</h1>
+    <img :src="$global.$SITE_LOGO_URI">
+    <h1>注册 {{ $global.$SITE_NAME }} 账户</h1>
     <p ref="welcomeTxt">
       你好, 世界。
     </p>

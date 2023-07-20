@@ -4,25 +4,16 @@ export default {
   name: 'HttpUtils',
   mixins: [SessionUtils],
   methods: {
-    sendPostToApi (requestApiURI, objectData, callbackFunc, checkCookie) {
+    sendPostToApi (requestApiURI, objectData, callbackFunc, takeActionIfSessionIsExpired) {
       const postData = {}
       postData.data = objectData
-      this.$axios.post('https://api.incloudify.com' + requestApiURI, postData)
+      this.$axios.post(this.$global.$API_URL + requestApiURI, postData)
         .then((data) => {
-          const result = data.data
+          const result = {}
+          result.data = data.data
           result.isError = false
-          if (checkCookie === undefined || checkCookie === true) {
-            if (result.code === 3013) {
-              this.deleteCookieValue('sessionId')
-              this.checkIfSessionIdExist()
-            } else {
-              callbackFunc(result)
-              return true
-            }
-          } else {
-            callbackFunc(result)
-            return true
-          }
+          callbackFunc(result)
+          return true
         }).catch((error) => {
           const errorObj = {}
           errorObj.isError = true
@@ -54,6 +45,14 @@ export default {
               errorObj.code = 422
               errorObj.message = '参数错误'
               errorObj.data = error.response.data
+            } else if (error.response.status === 401) {
+              errorObj.code = 401
+              errorObj.message = '登录以继续'
+              errorObj.data = error.response.data
+              if (takeActionIfSessionIsExpired) {
+                this.deleteCookieValue('sessionId')
+                this.checkIfSessionIdExist()
+              }
             } else {
               if (error.response.status !== undefined) {
                 errorObj.code = error.response.status
@@ -71,28 +70,26 @@ export default {
           return false
         })
     },
-    sendGetToApi (requestApiURI, extParam, callbackFunc, checkCookie) {
-      this.$axios.get('https://api.incloudify.com' + requestApiURI + '?' + extParam)
+    sendGetToApi (requestApiURI, extParam, callbackFunc, takeActionIfSessionIsExpired) {
+      this.$axios.get(this.$global.$API_URL + requestApiURI + '?' + extParam)
         .then((data) => {
           const result = data.data
-          if (checkCookie === undefined || checkCookie === true) {
-            if (result.code === 3013) {
-              this.deleteCookieValue('sessionId')
-              this.checkIfSessionIdExist()
-            } else {
-              callbackFunc(result)
-              return true
-            }
-          } else {
-            callbackFunc(result)
-            return true
-          }
+          callbackFunc(result)
+          return true
         }).catch((error) => {
           const errorObj = {}
           if (error.response.status === 500) {
             errorObj.code = 500
             errorObj.message = '服务器内部错误, 请稍后再试'
             errorObj.data = error.response.data
+          } else if (error.response.status === 401) {
+            errorObj.code = 401
+            errorObj.message = '登录以继续'
+            errorObj.data = error.response.data
+            if (takeActionIfSessionIsExpired) {
+              this.deleteCookieValue('sessionId')
+              this.checkIfSessionIdExist()
+            }
           }
           callbackFunc(errorObj)
           return false
