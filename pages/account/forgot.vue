@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <img src="~/static/incloudify-logo-large.png">
+    <img src="/cumquat-logo.png">
     <h1>忘记密码</h1>
     <p>丢失了密码? 输入信息以重置</p>
     <AccountForgotForm @submitSucceed="submitSucceed" @submit.native.prevent />

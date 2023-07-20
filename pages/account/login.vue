@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <img src="~/static/incloudify-logo-large.png">
+    <img src="/cumquat-logo.png">
     <h1>登录到 Comquat Console</h1>
     <p ref="welcomeTxt">
       请登录以继续操作
@@ -57,7 +57,7 @@ p {
 
 img {
   margin: 5px auto;
-  max-width: 150px;
+  max-width: 300px;
   max-height: 100px;
 }
 

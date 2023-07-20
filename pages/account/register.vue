@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <img src="~/static/incloudify-logo-large.png">
+    <img src="/cumquat-logo.png">
     <h1>注册玲行云端账户</h1>
     <p ref="welcomeTxt">
       你好, 世界。
