@@ -170,7 +170,7 @@ export default {
     },
     initializeUserSession (userInfoReturn) {
       const userInfoCookie = {}
-      userInfoCookie.uid = userInfoReturn.data.data.uid
+      userInfoCookie.uid = userInfoReturn.data.data.id
       userInfoCookie.username = userInfoReturn.data.data.username
       userInfoCookie.email = userInfoReturn.data.data.email
       userInfoCookie.status = userInfoReturn.data.data.status
@@ -188,6 +188,7 @@ export default {
       }
       const frontendTempSession = generateFrontendTempSession()
       this.editCookieValue('frontendTempSession', frontendTempSession, 259200)
+      this.actSubmitSucceed()
     },
     actSubmitSucceed () {
       this.$data.isSubmitted = true

@@ -50,7 +50,7 @@ export default {
               errorObj.message = '登录以继续'
               errorObj.data = error.response.data
               if (takeActionIfSessionIsExpired) {
-                this.deleteCookieValue('sessionId')
+                this.deleteCookieValue('frontendTempSession')
                 this.checkIfSessionIdExist()
               }
             } else {
@@ -73,7 +73,7 @@ export default {
     sendGetToApi (requestApiURI, extParam, callbackFunc, takeActionIfSessionIsExpired) {
       this.$axios.get(this.$global.$API_URL + requestApiURI + '?' + extParam)
         .then((data) => {
-          const result = data.data
+          const result = data
           callbackFunc(result)
           return true
         }).catch((error) => {
@@ -87,7 +87,7 @@ export default {
             errorObj.message = '登录以继续'
             errorObj.data = error.response.data
             if (takeActionIfSessionIsExpired) {
-              this.deleteCookieValue('sessionId')
+              this.deleteCookieValue('frontendTempSession')
               this.checkIfSessionIdExist()
             }
           }
