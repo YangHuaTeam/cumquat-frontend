@@ -10,19 +10,22 @@
       </v-card-title>
       <v-card-text>
         <p class="display-1 text--primary">
-          {{ TableFundCurrent }}
+          {{ tableFundCurrent }}
           元
         </p>
       </v-card-text>
       <v-alert
-        v-if="TableFundCurrent < 0"
+        v-if="tableFundCurrent < 0"
         dense
         type="error"
         icon="mdi-alert-octagon-outline"
         class="v-alert-arrearage"
         style="background-color: rgba(255, 127, 127) !important;"
       >
-        你的账户发生欠费, 请尽快补齐款项, 否则你的账户及名下资产将在 <strong>{{ deletionRemainDays }} 日后被删除</strong>
+        你的账户发生欠费, 请尽快补齐款项。
+        <span v-if="isAccountDeletionEnabled">
+          否则你的账户及名下资产将在 <strong>{{ deletionRemainDays }} 日后被删除</strong>
+        </span>
       </v-alert>
       <v-card-actions style="padding-bottom: 20px;">
         <v-btn to="/addfunds/vme50" color="primary">
@@ -38,11 +41,53 @@
 </template>
 
 <script>
+import HttpUtils from '~/utils/HttpUtils.vue'
 export default {
+  mixins: [HttpUtils],
   data: () => ({
-    TableFundCurrent: -86837,
-    deletionRemainDays: 3
-  })
+    tableFundCurrent: -86837,
+    deletionRemainDays: 3,
+    isAccountDeletionEnabled: false
+  }),
+  mounted () {
+    this.sendGetToApi('billing', '/getUserBalance', '', this.getUserBalanceInfo, true)
+  },
+  methods: {
+    getUserBalanceInfo (balanceDataObj) {
+      const defaultLayoutInstance = this.$root.$children[this.$root.$children.length - 1]
+      if (balanceDataObj.isError === false) {
+        if (balanceDataObj.data.code === 1000) {
+          this.$data.tableFundCurrent = balanceDataObj.data.data.balance
+          if (!this.$global.$BE_CONFIG.$PAYMENT.$FUND.$ENABLE_ACCOUNT_DELETION_WHEN_ARREARS_OCCURRED) {
+            this.$data.isAccountDeletionEnabled = false
+          } else {
+            this.$data.isAccountDeletionEnabled = true
+            this.$data.deletionRemainDays = balanceDataObj.data.data.accountDeletionRemain
+          }
+        } else {
+          defaultLayoutInstance.showSnackBar('error', 'API发生异常, 请检查后端', 10000, false)
+          this.$data.tableFundCurrent = 0
+          this.$data.deletionRemainDays = 0
+        }
+      } else if (balanceDataObj.isError === true) {
+        if (balanceDataObj.code === 404) {
+          if (balanceDataObj.data.code === 1003.1) {
+            defaultLayoutInstance.showSnackBar('warning', '支付方式获取失败, 请检查', 5000, true)
+            this.$data.tableFundCurrent = 0
+            this.$data.deletionRemainDays = 0
+          } else if (balanceDataObj.data.code === undefined) {
+            defaultLayoutInstance.showSnackBar('error', 'API发生异常, 请检查后端', 10000, false)
+            this.$data.tableFundCurrent = 0
+            this.$data.deletionRemainDays = 0
+          }
+        } else if (balanceDataObj.code === 500) {
+          defaultLayoutInstance.showSnackBar('error', 'API内部错误, 请检查后端', 10000, false)
+          this.$data.tableFundCurrent = 0
+          this.$data.deletionRemainDays = 0
+        }
+      }
+    }
+  }
 }
 </script>
 <style>

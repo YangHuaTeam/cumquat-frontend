@@ -5,7 +5,7 @@ export default {
     getCookieValue (cookie, cookieName) {
       for (let i = 0; i < cookie.length; i++) {
         const splitedData = cookie[i].split('=')
-        if (splitedData[0] === cookieName) {
+        if (splitedData[0].includes(cookieName)) { // 如果使用";"进行分割, 可能会导致splitedData[0]包含空格。此时如果使用绝对等于判断, 可能会导致无法正确找到参数, 引发异常
           return splitedData[1]
         }
       }

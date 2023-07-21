@@ -4,9 +4,20 @@ export default {
   name: 'HttpUtils',
   mixins: [SessionUtils],
   methods: {
-    sendPostToApi (requestApiURI, objectData, callbackFunc, takeActionIfSessionIsExpired) {
+    sendPostToApi (operationType, requestApiURI, objectData, callbackFunc, takeActionIfSessionIsExpired) {
       const postData = {}
       postData.data = objectData
+      if (operationType === 'account') {
+        requestApiURI = this.$global.$BE_URL.$ACCOUNT + requestApiURI
+      } else if (operationType === 'payment') {
+        requestApiURI = this.$global.$BE_URL.$PAYMENT + requestApiURI
+      } else if (operationType === 'billing') {
+        requestApiURI = this.$global.$BE_URL.$BILLING + requestApiURI
+      } else if (operationType === 'instance') {
+        requestApiURI = this.$global.$BE_URL.$INSTANCE + requestApiURI
+      } else if (operationType === 'product') {
+        requestApiURI = this.$global.$BE_URL.$PRODUCT + requestApiURI
+      }
       this.$axios.post(this.$global.$API_URL + requestApiURI, postData)
         .then((data) => {
           const result = {}
@@ -50,7 +61,7 @@ export default {
               errorObj.message = '登录以继续'
               errorObj.data = error.response.data
               if (takeActionIfSessionIsExpired) {
-                this.deleteCookieValue('sessionId')
+                this.deleteCookieValue('frontendTempSession')
                 this.checkIfSessionIdExist()
               }
             } else {
@@ -70,14 +81,27 @@ export default {
           return false
         })
     },
-    sendGetToApi (requestApiURI, extParam, callbackFunc, takeActionIfSessionIsExpired) {
+    sendGetToApi (operationType, requestApiURI, extParam, callbackFunc, takeActionIfSessionIsExpired) {
+      if (operationType === 'account') {
+        requestApiURI = this.$global.$BE_URL.$ACCOUNT + requestApiURI
+      } else if (operationType === 'payment') {
+        requestApiURI = this.$global.$BE_URL.$PAYMENT + requestApiURI
+      } else if (operationType === 'billing') {
+        requestApiURI = this.$global.$BE_URL.$BILLING + requestApiURI
+      } else if (operationType === 'instance') {
+        requestApiURI = this.$global.$BE_URL.$INSTANCE + requestApiURI
+      } else if (operationType === 'product') {
+        requestApiURI = this.$global.$BE_URL.$PRODUCT + requestApiURI
+      }
       this.$axios.get(this.$global.$API_URL + requestApiURI + '?' + extParam)
         .then((data) => {
-          const result = data.data
+          const result = data
+          result.isError = false
           callbackFunc(result)
           return true
         }).catch((error) => {
           const errorObj = {}
+          errorObj.isError = true
           if (error.response.status === 500) {
             errorObj.code = 500
             errorObj.message = '服务器内部错误, 请稍后再试'
@@ -87,9 +111,13 @@ export default {
             errorObj.message = '登录以继续'
             errorObj.data = error.response.data
             if (takeActionIfSessionIsExpired) {
-              this.deleteCookieValue('sessionId')
+              this.deleteCookieValue('frontendTempSession')
               this.checkIfSessionIdExist()
             }
+          } else {
+            errorObj.code = error.response.status
+            errorObj.message = error.response.message
+            errorObj.data = error.response.data
           }
           callbackFunc(errorObj)
           return false

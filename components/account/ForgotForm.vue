@@ -102,7 +102,7 @@ export default {
       const usernameData = this.$data.usernameData
       const dataObj = {}
       dataObj.username = usernameData
-      this.sendPostToApi('/account/forgot', dataObj, this.reqDataCallback, false)
+      this.sendPostToApi('account', '/forgot', dataObj, this.reqDataCallback, false)
     },
     reqDataCallback (requestDataReturn) {
       if (requestDataReturn.code === 1000) {

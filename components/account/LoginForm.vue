@@ -122,12 +122,12 @@ export default {
       const dataObj = {}
       dataObj.username = usernameData
       dataObj.password = saltPasswordSHA512
-      this.sendPostToApi('/user/login', dataObj, this.reqDataCallback, false)
+      this.sendPostToApi('account', '/login', dataObj, this.reqDataCallback, false)
     },
     reqDataCallback (requestDataReturn) {
       if (requestDataReturn.isError === false) { // If log-in is working
         if (requestDataReturn.data.code === 1000) { // 为了更好的观感以及便于修改, 此处没有使用 &&
-          this.sendGetToApi('/user/overview', '', this.initializeUserSession, false)
+          this.sendGetToApi('account', '/overview', '', this.initializeUserSession, false)
         }
       } else if (requestDataReturn.isError === true) { // If log-in isn't working
         if (requestDataReturn.code === 401) { // Code is 1001
@@ -170,7 +170,7 @@ export default {
     },
     initializeUserSession (userInfoReturn) {
       const userInfoCookie = {}
-      userInfoCookie.uid = userInfoReturn.data.data.uid
+      userInfoCookie.uid = userInfoReturn.data.data.id
       userInfoCookie.username = userInfoReturn.data.data.username
       userInfoCookie.email = userInfoReturn.data.data.email
       userInfoCookie.status = userInfoReturn.data.data.status
@@ -188,6 +188,7 @@ export default {
       }
       const frontendTempSession = generateFrontendTempSession()
       this.editCookieValue('frontendTempSession', frontendTempSession, 259200)
+      this.actSubmitSucceed()
     },
     actSubmitSucceed () {
       this.$data.isSubmitted = true
