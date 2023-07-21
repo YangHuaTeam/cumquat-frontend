@@ -333,7 +333,7 @@ export default {
       postObject.id = this.$data.mailData
       postObject.activity = '注册'
       this.$data.isSendingVerifyCode = true
-      this.sendPostToApi('/account/sendVerifyCode', postObject, this.verifyCodeSendCallBack, false)
+      this.sendPostToApi('account', '/sendVerifyCode', postObject, this.verifyCodeSendCallBack, false)
     },
     verifyCodeSendCallBack (requestDataReturn) {
       if (requestDataReturn.isError !== true) {
@@ -387,7 +387,7 @@ export default {
       dataObj.sex = sex
       dataObj.respectId = respectId
       dataObj.captcha = verifyCode
-      this.sendPostToApi('/account/register', dataObj, this.reqDataCallback, false)
+      this.sendPostToApi('account', '/register', dataObj, this.reqDataCallback, false)
     },
     reqDataCallback (requestDataReturn) {
       if (requestDataReturn.code === 1000) {
