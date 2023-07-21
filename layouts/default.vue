@@ -35,6 +35,7 @@ export default {
     }
   },
   mounted () {
+    this.$root.$DefLayout = this.$root.$children[this.$root.$children.length - 1]
     if (this.$data.excludeList.includes(this.$route.path)) {
       const sessionExist = this.checkIfSessionIdExist(false)
       if (sessionExist === true) {

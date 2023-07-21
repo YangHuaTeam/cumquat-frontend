@@ -23,8 +23,8 @@
         style="background-color: rgba(255, 127, 127) !important;"
       >
         你的账户发生欠费, 请尽快补齐款项。
-        <span v-if="isAccountDeletionEnabled">
-          否则你的账户及名下资产将在 <strong>{{ deletionRemainDays }} 日后被删除</strong>
+        <span v-if="isAccountBanningEnabled">
+          否则你的账户将在 <strong>{{ banningRemainDays }} 日后被封禁</strong>
         </span>
       </v-alert>
       <v-card-actions style="padding-bottom: 20px;">
@@ -46,8 +46,8 @@ export default {
   mixins: [HttpUtils],
   data: () => ({
     tableFundCurrent: -86837,
-    deletionRemainDays: 3,
-    isAccountDeletionEnabled: false
+    banningRemainDays: 3,
+    isAccountBanningEnabled: false
   }),
   mounted () {
     this.sendGetToApi('billing', '/getUserBalance', '', this.getUserBalanceInfo, true)
@@ -58,11 +58,11 @@ export default {
       if (balanceDataObj.isError === false) {
         if (balanceDataObj.data.code === 1000) {
           this.$data.tableFundCurrent = balanceDataObj.data.data.balance
-          if (!this.$global.$BE_CONFIG.$PAYMENT.$FUND.$ENABLE_ACCOUNT_DELETION_WHEN_ARREARS_OCCURRED) {
-            this.$data.isAccountDeletionEnabled = false
+          if (!this.$global.$BE_CONFIG.$PAYMENT.$FUND.$ENABLE_ACCOUNT_BANNING_WHEN_ARREARS_OCCURRED) {
+            this.$data.isAccountBanningEnabled = false
           } else {
-            this.$data.isAccountDeletionEnabled = true
-            this.$data.deletionRemainDays = balanceDataObj.data.data.accountDeletionRemain
+            this.$data.isAccountBanningEnabled = true
+            this.$data.banningRemainDays = balanceDataObj.data.data.bannedRemain
           }
         } else {
           defaultLayoutInstance.showSnackBar('error', 'API发生异常, 请检查后端', 10000, false)

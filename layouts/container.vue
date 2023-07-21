@@ -58,6 +58,7 @@ export default {
     }
   },
   mounted () {
+    this.$root.$ContainerLayout = this.$root.$children[this.$root.$children.length - 1]
     const sessionExist = this.checkIfSessionIdExist()
     this.pushRouter(sessionExist)
   },

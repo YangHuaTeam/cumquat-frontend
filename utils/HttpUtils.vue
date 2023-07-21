@@ -26,6 +26,7 @@ export default {
           callbackFunc(result)
           return true
         }).catch((error) => {
+          console.error(error)
           const errorObj = {}
           errorObj.isError = true
           if (error.message === 'Network Error') {
@@ -100,6 +101,7 @@ export default {
           callbackFunc(result)
           return true
         }).catch((error) => {
+          console.error(error)
           const errorObj = {}
           errorObj.isError = true
           if (error.response.status === 500) {
