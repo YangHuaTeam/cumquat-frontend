@@ -17,6 +17,8 @@ export default {
         requestApiURI = this.$global.$BE_URL.$INSTANCE + requestApiURI
       } else if (operationType === 'product') {
         requestApiURI = this.$global.$BE_URL.$PRODUCT + requestApiURI
+      } else if (operationType === 'site') {
+        requestApiURI = this.$global.$BE_URL.$SITE + requestApiURI
       }
       this.$axios.post(this.$global.$API_URL + requestApiURI, postData)
         .then((data) => {
@@ -93,6 +95,8 @@ export default {
         requestApiURI = this.$global.$BE_URL.$INSTANCE + requestApiURI
       } else if (operationType === 'product') {
         requestApiURI = this.$global.$BE_URL.$PRODUCT + requestApiURI
+      } else if (operationType === 'site') {
+        requestApiURI = this.$global.$BE_URL.$SITE + requestApiURI
       }
       this.$axios.get(this.$global.$API_URL + requestApiURI + '?' + extParam)
         .then((data) => {

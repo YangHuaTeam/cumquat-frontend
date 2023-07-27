@@ -24,7 +24,7 @@
       >
         你的账户发生欠费, 请尽快补齐款项。
         <span v-if="isAccountBanningEnabled">
-          否则你的账户将在 <strong>{{ banningRemainDays }} 日后被封禁</strong>
+          否则你的账户将在 <strong>{{ banningRemainDays }} 日后被封禁。</strong>
         </span>
       </v-alert>
       <v-card-actions style="padding-bottom: 20px;">
@@ -45,8 +45,8 @@ import HttpUtils from '~/utils/HttpUtils.vue'
 export default {
   mixins: [HttpUtils],
   data: () => ({
-    tableFundCurrent: -86837,
-    banningRemainDays: 3,
+    tableFundCurrent: 0,
+    banningRemainDays: -1,
     isAccountBanningEnabled: false
   }),
   mounted () {

@@ -4,8 +4,8 @@
     <!-- 公告行 开始 -->
     <v-row>
       <v-col>
-        <v-alert icon="mdi-bullhorn-outline" :type="announcementLevel">
-          公告: {{ announcement }}
+        <v-alert ref="broadcastAlertEl" icon="mdi-bullhorn-outline" :type="announcementLevel">
+          公告: 暂无公告
         </v-alert>
       </v-col>
     </v-row>
@@ -19,9 +19,9 @@
     <!-- 产品标题 结束 -->
     <!-- 产品行 开始 -->
     <v-row>
-      <div v-for="products in recommendProductsInfo.products" :key="products.key" class="products-div">
+      <div v-for="products in recommendProductsInfo" :key="products.id" class="products-div">
         <v-col>
-          <v-btn class="productbtn" :to="products.link">
+          <v-btn class="productbtn" :to="products.productUri">
             {{ products.productName }}
           </v-btn>
         </v-col>
@@ -32,51 +32,37 @@
 </template>
 
 <script>
+import HttpUtils from '~/utils/HttpUtils.vue'
 export default {
+  mixins: [HttpUtils],
   data: () => ({
     tableFundCurrent: 0,
-    announcement: '近日行云因遭大流量攻击, 产品运行可能不稳定。',
     announcementLevel: 'warning',
-    recommendProductsInfo: {
-      products: [
-        {
-          key: 1,
-          productName: '甜甜花酿鸡',
-          link: '/kfc/crazy/thurday/vme50'
-        },
-        {
-          key: 2,
-          productName: '容器云',
-          link: '/container'
-        },
-        {
-          key: 3,
-          productName: '轻量应用服务器',
-          link: '/lws'
-        },
-        {
-          key: 4,
-          productName: '云服务器',
-          link: '/ics'
-        },
-        {
-          key: 5,
-          productName: '提瓦特桌面',
-          link: '/tcd'
-        },
-        {
-          key: 6,
-          productName: '虚拟主机',
-          link: '/ivh'
-        },
-        {
-          key: 7,
-          productName: '蒙德土豆饼',
-          link: '/mondstadt/potato/pie'
+    recommendProductsInfo: []
+  }),
+  mounted () {
+    this.sendGetToApi('product', '/getHotProducts', '', this.compressHotProductsInfo, false)
+  },
+  methods: {
+    compressHotProductsInfo (dataObj) {
+      if (dataObj.isError === false) {
+        if (dataObj.data.code === 1000) {
+          const uninitedProductsInfo = dataObj.data.data
+          for (let i = 0; i < uninitedProductsInfo.length; i++) {
+            uninitedProductsInfo[i].id = i + 1
+          }
+          const initedProductsInfo = uninitedProductsInfo
+          this.$data.recommendProductsInfo = initedProductsInfo
+        } else {
+          this.$root.$DefLayout.showSnackBar('error', 'API异常, 请检查后端', 3000, true)
         }
-      ]
+      } else if (dataObj.isError) {
+        if (dataObj.code === 500) {
+          this.$root.$DefLayout.showSnackBar('error', 'API内部错误, 请检查后端', 3000, true)
+        }
+      }
     }
-  })
+  }
 }
 </script>
 

@@ -19,7 +19,8 @@ const $global = {
         $BILLING: ($IS_UNDER_DEV ? '/3043576-0-9d16ce0a' : '/bill'),
         $PRODUCT: ($IS_UNDER_DEV ? '/3043576-0-d29e07db' : '/product'),
         $INSTANCE: ($IS_UNDER_DEV ? '/3043576-0-67e82ade' : '/instance'),
-        $PAYMENT: ($IS_UNDER_DEV ? '/3043576-0-d9ca29d5' : '/pay')
+        $PAYMENT: ($IS_UNDER_DEV ? '/3043576-0-d9ca29d5' : '/pay'),
+        $SITE: ($IS_UNDER_DEV ? '/3043576-0-62ffb9c1' : '/site')
       }
     }
   }

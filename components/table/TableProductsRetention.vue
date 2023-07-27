@@ -28,8 +28,6 @@ export default {
   mixins: [HttpUtils],
   data: () => ({
     tableFundCurrent: 0,
-    announcement: '近日行云因遭大流量攻击, 产品运行可能不稳定。',
-    announcementLevel: 'warning',
     productsInfo: []
   }),
   mounted () {
@@ -68,7 +66,6 @@ export default {
       for (let productIndex = 0; productIndex < initedProductsInfo.length; productIndex++) {
         this.sendGetToApi('product', '/getProductUri', 'productName=' + initedProductsInfo[productIndex].productName, linkSingleProduct, false)
       }
-      console.debug(initedProductsInfo)
       const awaitLinkingComplete = () => {
         if (linkedElCount === initedProductsInfo.length) {
           this.$data.productsInfo = initedProductsInfo
